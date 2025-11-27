@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tịnh Độ Pháp Âm - Audio Player</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700;900&family=Crimson+Text:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Website nghe pháp âm Tịnh Độ - Thầy Thích Chân Hiếu">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-logo">
+                <img src="Title Logo.webp" alt="Tịnh Độ Pháp Âm">
+            </div>
+            <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <img src="Title Logo.webp" alt="Tịnh Độ Pháp Âm">
+                    </div>
+                </div>
+                <button class="theme-toggle desktop-only" id="themeToggleDesktop" title="Toggle Dark/Light Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <i class="fas fa-music"></i>
+                    <span id="totalTracks">0</span> bài
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-heart"></i>
+                    <span id="totalFavorites">0</span> yêu thích
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Tìm kiếm bài giảng..." autocomplete="off">
+                <button id="clearSearch" class="clear-search" style="display: none;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">
+                    <i class="fas fa-book"></i> Thư viện
+                </button>
+                <button class="filter-tab" data-filter="favorites">
+                    <i class="fas fa-list"></i> Playlist
+                </button>
+                <button class="filter-tab" data-filter="recent">
+                    <i class="fas fa-history"></i> Lịch sử
+                </button>
+            </div>
+
+            <!-- Playlist -->
+            <div class="playlist" id="playlist">
+                <div class="loading">
+                    <div class="skeleton-loader">
+                        <div class="skeleton-item"></div>
+                        <div class="skeleton-item"></div>
+                        <div class="skeleton-item"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Animated Background -->
+            <div class="animated-bg"></div>
+
+            <!-- Player View (Default on Desktop) -->
+            <div class="content-view active" id="playerView">
+                <!-- Buddha Name Section -->
+                <div class="buddha-name-section">
+                    <h1 class="buddha-name">Nam Mô A Di Đà Phật</h1>
+                </div>
+
+            <!-- Slogan Section -->
+            <div class="slogan-section">
+                <img src="Slogan.png" alt="Slogan" class="slogan-image">
+            </div>
+
+            <!-- Player Section -->
+            <div class="player-section">
+                <div class="player-info">
+                    <div class="album-art">
+                        <div class="album-art-inner">
+                            <i class="fas fa-dharmachakra"></i>
+                            <div class="vinyl-effect"></div>
+                        </div>
+                        <button class="favorite-btn" id="favoriteBtn" title="Thêm vào playlist">
+                            <i class="far fa-star"></i>
+                        </button>
+                    </div>
+                    <div class="track-info">
+                        <h2 id="trackTitle">Chọn bài giảng để phát</h2>
+                        <p id="trackFolder">---</p>
+                        <div class="track-actions">
+                            <button class="action-btn" id="shareBtn" title="Chia sẻ">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <button class="action-btn" id="downloadBtn" title="Tải xuống">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio Element -->
+                <audio id="audioPlayer" preload="metadata"></audio>
+
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <span class="time" id="currentTime">0:00</span>
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress-fill" id="progressFill"></div>
+                        <div class="progress-handle" id="progressHandle"></div>
+                    </div>
+                    <span class="time" id="duration">0:00</span>
+                </div>
+
+                <!-- Controls -->
+                <div class="controls">
+                    <button class="control-btn secondary" id="shuffleBtn" title="Shuffle">
+                        <i class="fas fa-random"></i>
+                    </button>
+                    <button class="control-btn" id="prevBtn" title="Previous (Arrow Left)">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button class="control-btn play-btn" id="playBtn" title="Play/Pause (Space)">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="control-btn" id="nextBtn" title="Next (Arrow Right)">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                    <button class="control-btn secondary" id="repeatBtn" title="Repeat">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    
+                    <div class="volume-control">
+                        <button class="control-btn" id="muteBtn" title="Mute/Unmute (M)">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <input type="range" id="volumeSlider" min="0" max="100" value="80" class="volume-slider">
+                    </div>
+
+                    <div class="speed-control">
+                        <button class="control-btn" id="speedBtn" title="Playback Speed">
+                            <span class="speed-text">1.0x</span>
+                        </button>
+                        <div class="speed-menu" id="speedMenu">
+                            <button data-speed="0.75">0.75x</button>
+                            <button data-speed="1" class="active">1.0x</button>
+                            <button data-speed="1.25">1.25x</button>
+                            <button data-speed="1.5">1.5x</button>
+                            <button data-speed="2">2.0x</button>
+                        </div>
+                    </div>
+
+                    <button class="control-btn secondary" id="queueBtn" title="Queue">
+                        <i class="fas fa-list-ul"></i>
+                    </button>
+                </div>
+
+                <!-- Error Message -->
+                <div class="error-message" id="errorMessage" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="errorText"></span>
+                </div>
+            </div>
+
+            <!-- Keyboard Shortcuts Info -->
+            <div class="shortcuts-info">
+                <h3><i class="fas fa-keyboard"></i> Phím tắt</h3>
+                <div class="shortcuts-grid">
+                    <div><kbd>Space</kbd> Play/Pause</div>
+                    <div><kbd>←</kbd> Tua lùi 10s</div>
+                    <div><kbd>→</kbd> Tua tới 10s</div>
+                    <div><kbd>M</kbd> Mute/Unmute</div>
+                    <div><kbd>S</kbd> Shuffle</div>
+                    <div><kbd>R</kbd> Repeat</div>
+                </div>
+            </div>
+
+                <!-- Lotus Decoration -->
+                <div class="lotus-decoration">
+                    <img src="hoasen.png" alt="Hoa Sen">
+                </div>
+            </div>
+
+            <!-- Library View -->
+            <div class="content-view" id="libraryView">
+                <div class="library-header">
+                    <h2><i class="fas fa-book"></i> Thư viện</h2>
+                    <p class="library-subtitle">Danh sách tất cả bài giảng</p>
+                </div>
+                <div class="library-content" id="libraryContent">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Đang tải thư viện...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Playlist View -->
+            <div class="content-view" id="playlistView">
+                <div class="library-header">
+                    <h2><i class="fas fa-list"></i> Playlist</h2>
+                    <p class="library-subtitle">Danh sách bài tự chọn</p>
+                </div>
+                <div class="library-content" id="playlistContent">
+                    <div class="loading">
+                        <p>Chưa có bài nào trong playlist</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History View -->
+            <div class="content-view" id="historyView">
+                <div class="library-header">
+                    <h2><i class="fas fa-history"></i> Lịch sử</h2>
+                    <p class="library-subtitle">Các bài đã nghe gần đây</p>
+                </div>
+                <div class="library-content" id="historyContent">
+                    <div class="loading">
+                        <p>Chưa có lịch sử nghe</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Queue Panel -->
+        <div class="queue-panel" id="queuePanel">
+            <div class="queue-header">
+                <h3><i class="fas fa-list-ul"></i> Hàng đợi phát</h3>
+                <button class="close-queue" id="closeQueue">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="queue-content" id="queueContent">
+                <p class="empty-queue">Chưa có bài nào trong hàng đợi</p>
+            </div>
+        </div>
+
+        <!-- Share Modal -->
+        <div class="modal" id="shareModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-share-alt"></i> Chia sẻ</h3>
+                    <button class="close-modal" id="closeShareModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="share-link">
+                        <input type="text" id="shareLink" readonly>
+                        <button id="copyLink" class="copy-btn">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <div class="share-buttons">
+                        <button class="share-btn facebook" id="shareFacebook">
+                            <i class="fab fa-facebook"></i> Facebook
+                        </button>
+                        <button class="share-btn twitter" id="shareTwitter">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </button>
+                        <button class="share-btn whatsapp" id="shareWhatsapp">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mini Player (Mobile) -->
+        <div class="mini-player" id="miniPlayer">
+            <div class="mini-progress-bar" id="miniProgressBar">
+                <div class="mini-progress-fill" id="miniProgressFill"></div>
+            </div>
+            <div class="mini-player-content" id="miniPlayerContent">
+                <div class="mini-player-info">
+                    <button class="mini-album-art" id="miniRepeatBtn" title="Repeat">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <div class="mini-track-info">
+                        <div class="mini-track-title" id="miniTrackTitle">Chọn bài giảng</div>
+                        <div class="mini-track-time">
+                            <span id="miniCurrentTime">0:00</span> / <span id="miniDuration">0:00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mini-player-controls">
+                    <button class="mini-control-btn" id="miniPrevBtn">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button class="mini-control-btn mini-play-btn" id="miniPlayBtn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="mini-control-btn" id="miniNextBtn">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                    <button class="mini-control-btn" id="miniCloseBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar (Mobile) -->
+        <div class="bottom-nav" id="bottomNav">
+            <button class="nav-item" data-nav="playlist">
+                <i class="fas fa-list"></i>
+                <span>Playlist</span>
+            </button>
+            <button class="nav-item" data-nav="library">
+                <i class="fas fa-book"></i>
+                <span>Thư viện</span>
+            </button>
+            <button class="nav-item" data-nav="history">
+                <i class="fas fa-history"></i>
+                <span>Lịch sử</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
